@@ -3,10 +3,19 @@ from datetime import datetime
 
 class Field:
     def __init__(self, value) -> None:
-        self.__value = value
+        self.__value = None
         self.value = value
     
+    @property
+    def value(self):
+        return self.__value
+    
+    @value.setter
+    def value(self, value):
+        self.__value = value
+    
     def __str__(self) -> str:
+        print(self.value)
         return self.value
     
     def __repr__(self) -> str:
@@ -20,20 +29,20 @@ class Name(Field):
     
 
 class Phone(Field):
-    ...
+    # ...
     # def __init__(self):
     #     super().__init__()
 
-    # @property
-    # def value(self):
-    #     return self.__value
+    @property
+    def value(self):
+        return self.__value
     
-    # @value.setter
-    # def value(self, value):
-    #     #print(value.isdigit())
-    #     #print(len(value))
-    #     if (value.isdigit()) and (len(value) > 3):
-    #         self.__value = value    
+    @value.setter
+    def value(self, value):
+        #print(value.isdigit())
+        #print(len(value))
+        if (value.isdigit()) and (len(value) > 3):
+            self.__value = value    
 
 
 class Birthday(Field):
@@ -46,8 +55,9 @@ class Record:
         self.phones = []
         if phone:
             self.phones.append(phone)
-        if birthday:
-            self.birthday = birthday
+        # if birthday:
+        self.birthday = birthday
+        print(self.phones)
     
     def add_phone(self, phone: Phone = None):
         #if phone.value not in [p.value for p in self.phones]:
@@ -88,7 +98,7 @@ class Record:
 
     def __str__(self) -> str:
         #return f"{self.name}: {', '.join(str(p) for p in self.phones)}"
-        result = f"{self.name}: {', '.join(str(p) for p in self.phones) if self.phones else ''} {self.birthday}"
+        result = f"{self.name}: {', '.join(str(p) for p in self.phones) if self.phones else ''} {self.birthday if self.birthday else ''}"
         return result
     
 class AddressBook(UserDict):
