@@ -19,20 +19,21 @@ def add_command(*args):
     # name = Name(name)
     # phone = Phone(phone)
     name = Name(args[0])
-    phone = Phone(args[1]) if len(args) > 1 else Phone("")
-    birthday = Birthday(args[2]) if len(args) > 2 else Birthday("") 
+    phone = Phone(args[1]) if len(args) > 1 else None
+    birthday = Birthday(args[2]) if len(args) > 2 else None
     rec: Record = address_book.get(str(name))
     if rec:
         return rec.add_phone(phone)
     #rec = Record(name, phone) 
     #print(birthday)
-    if len(args) == 3:
-        rec = Record(name, phone, birthday)
-    if len(args) == 2:
-        rec = Record(name, phone)
-    if len(args) == 1:
-        rec = Record(name)
-    #print(rec)
+    # if len(args) == 3:
+    #     rec = Record(name, phone, birthday)
+    # if len(args) == 2:
+    #     rec = Record(name, phone)
+    # if len(args) == 1:
+    #     rec = Record(name)
+    # #print(rec)
+    rec = Record(name, phone, birthday)
     return address_book.add_record(rec)
 
 @input_error
