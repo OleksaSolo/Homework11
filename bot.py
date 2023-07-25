@@ -1,4 +1,4 @@
-from ab_classes import AddressBook, Name, Phone, Birthday, Record
+from ab_classes import AddressBook, Name, Phone, Birthday, Record, error_except
 
 address_book = AddressBook()
 
@@ -13,6 +13,7 @@ def input_error(func):
 
 
 @input_error
+@error_except
 def add_command(*args):
 #def add_command(name, phone = ''):
     #print(f" len agrs {len(args)}")

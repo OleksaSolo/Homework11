@@ -1,5 +1,34 @@
 from collections import UserDict
+from datetime import date
 from datetime import datetime
+
+class BirthdayError(Exception):
+    ...
+
+class PhoneError(Exception):
+    ...
+
+
+def error_except(function):
+    def inner(*args):
+        try:
+            function(*args)
+        except BirthdayError:
+            print('That is incorrect birthday!')
+        except PhoneError as pe:
+            if pe.args:
+                print(f'This phone number is too {pe.args[0]}!')
+                #return f'This phone number is too {pe.args[0]}!'
+            else:
+                print('That is incorrect phone number!')
+                #return 'That is incorrect phone number!'
+        except ValueError:
+            print('Something is wrong!')
+        except AttributeError:
+            print('Something is wrong!')
+        except KeyError:
+            print('Name is incorrect!\n')
+    return inner
 
 class Field:
     def __init__(self, value) -> None:
@@ -15,11 +44,14 @@ class Field:
         self.__value = value
     
     def __str__(self) -> str:
-        print(self.value)
+        #print(self.value)
         return self.value
     
     def __repr__(self) -> str:
-        return str(self)
+        if self != None:
+            return str(self)
+        else:
+            return ""
         
     def __eq__(self, other):
         return self.value == other.value
@@ -38,17 +70,77 @@ class Phone(Field):
         return self.__value
     
     @value.setter
+    @error_except
     def value(self, value):
-        #print(value.isdigit())
-        #print(len(value))
-        if (value.isdigit()) and (len(value) > 3):
-            self.__value = value    
+        try:
+            if (value.isdigit()) or (value.startswith('+') and int(value[1:].isdigit())):
+                self.__value = value
+                if 10 > len(value):
+                    self.__value = None
+                    raise PhoneError('short')
+                if 13 < len(value):
+                    self.__value = None
+                    raise PhoneError('long')
+            else:
+                self.__value = None
+        except ValueError:
+            self.__value = None
+            raise PhoneError
 
+    def __str__(self):
+        return str(self.value)
+
+    # def value(self, value):
+    #     #print(value.isdigit())
+    #     #print(len(value))
+    #     if (value.isdigit()) and (len(value) > 3):
+    #         self.__value = value    
+    #     else:
+    #         raise ValueError("Enter minimum 4 digit for number")
+
+# class Birthday(Field):
+
+#     @property
+#     def value(self):
+#         if self.__value:
+#             return self.__value
+        
+#     @value.setter
+#     @error_except
+#     def value(self, value):
+#         try:
+#             self.__value = value
+#             #self.__value = datetime.strptime(value, "%d-%m-%Y")
+#         except ValueError:
+#             self.__value = None
+#             raise BirthdayError
+#         except IndexError:
+#             self.__value = None
+#             raise BirthdayError
 
 class Birthday(Field):
-    ...
 
+    def __init__(self, value: str) -> None:
+        self.__value = None
+        self.value = value
+        super().__init__(value)
 
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, __new_value):
+        d = date.fromisoformat(__new_value)
+        if d:
+            self.__value = d
+        else:
+            #raise ValueError("wrong date format, not ISO 8601")
+            raise BirthdayError
+
+    def __str__(self):
+        return self.value.isoformat()
+    
 class Record:
     def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None) -> None:
         self.name = name
@@ -57,7 +149,7 @@ class Record:
             self.phones.append(phone)
         # if birthday:
         self.birthday = birthday
-        print(self.phones)
+        #print(self.phones)
     
     def add_phone(self, phone: Phone = None):
         #if phone.value not in [p.value for p in self.phones]:
@@ -98,7 +190,9 @@ class Record:
 
     def __str__(self) -> str:
         #return f"{self.name}: {', '.join(str(p) for p in self.phones)}"
-        result = f"{self.name}: {', '.join(str(p) for p in self.phones) if self.phones else ''} {self.birthday if self.birthday else ''}"
+        result = f"{self.name}: {', '.join(str(p) for p in self.phones) if self.phones else ''} {str(self.birthday) if self.birthday else ''}"
+        #result = f"{self.name}"
+        #result = f"{self.name}: {', '.join(p for p in self.phones) if self.phones else ''} {self.birthday if self.birthday else ''}"
         return result
     
 class AddressBook(UserDict):
